@@ -20,6 +20,9 @@
     <!-- Custom styles for this template-->
     <link href="/stylesheets/sb-admin-2.min.css" rel="stylesheet">
 
+    <!-- Icon bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
 
 <body id="page-top">
@@ -128,48 +131,123 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">News</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Create Data</h1>
                     </div>
 
                     <!-- Content Row -->
                     <div class="row justify-content-center">
-                        <!-- Area News -->
-                        <div class="col-xl-6 col-lg-6">
+                        <!-- Form Card -->
+                        <div class="col-xl-8 col-lg-8">
                             <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
+                                <!-- Card Header -->
                                 <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
+                                    <h6 class="m-0 font-weight-bold">เพิ่มรายรับรายจ่าย</h6>
+                                    <i class="fas fa-plus-circle"></i>
                                 </div>
+
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <div class="chart-area">
-                                        <!-- Content News -->
-                                    </div>
+                                    <form>
+                                        <!-- Date input -->
+                                        <div class="form-group row">
+                                            <label for="dataDate"
+                                                class="col-sm-2 col-form-label font-weight-bold text-primary">
+                                                <i class="fas fa-calendar-alt"></i> วันที่
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <input type="date" class="form-control form-control-lg" id="dataDate"
+                                                    placeholder="เลือกวันที่">
+                                            </div>
+                                        </div>
+
+                                        <!-- Title input -->
+                                        <div class="form-group row">
+                                            <label for="dataTitle"
+                                                class="col-sm-2 col-form-label font-weight-bold text-primary">
+                                                <i class="fas fa-align-left"></i> ชื่อรายการ
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control form-control-lg" id="dataTitle"
+                                                    placeholder="ใส่ชื่อรายการ">
+                                            </div>
+                                        </div>
+
+                                        <!-- Type input (รายรับ/รายจ่าย) -->
+                                        <div class="form-group row">
+                                            <label for="dataType"
+                                                class="col-sm-2 col-form-label font-weight-bold text-primary">
+                                                <i class="fas fa-paperclip"></i> รายการ
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control form-control-lg" id="dataType"
+                                                    onchange="toggleAmountField()">
+                                                    <option value="">-- เลือกรายการ --</option>
+                                                    <option value="income">รายรับ</option>
+                                                    <option value="expense">รายจ่าย</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Amount input (ซ่อนไว้โดยค่าเริ่มต้น) -->
+                                        <div class="form-group row" id="amountField" style="display: none;">
+                                            <label for="dataAmount"
+                                                class="col-sm-2 col-form-label font-weight-bold text-primary">
+                                                <i class="fas fa-dollar-sign"></i> จำนวนเงิน
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <input type="number" class="form-control form-control-lg"
+                                                    id="dataAmount" placeholder="ใส่จำนวนเงิน">
+                                            </div>
+                                        </div>
+
+                                        <!-- Category input -->
+                                        <div class="form-group row">
+                                            <label for="dataCategory"
+                                                class="col-sm-2 col-form-label font-weight-bold text-primary">
+                                                <i class="fas fa-folder"></i> หมวดหมู่
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control form-control-lg" id="dataCategory">
+                                                    <option value="">-- หมวดหมู่ --</option>
+                                                    <option value="food">ค่าอาหาร</option>
+                                                    <option value="personal">ของใช้ส่วนตัว</option>
+                                                    <option value="utilities">ค่าน้ำ/ค่าไฟ</option>
+                                                    <option value="internet">ค่าโทรศัพท์/อินเตอร์เน็ต</option>
+                                                    <option value="rent">ค่าเช่าบ้าน</option>
+                                                    <option value="fuel">ค่าน้ำมัน</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                                <i class="fas fa-save"></i> บันทึกรายการ
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.container-fluid -->
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Group 3 2023</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
-        <!-- End of Content Wrapper -->
-
+        <!-- /.container-fluid -->
     </div>
-    <!-- End of Page Wrapper -->
+    <!-- End of Main Content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>Copyright &copy; Group 3 2023</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -201,9 +279,14 @@
     <!-- Custom scripts for all pages-->
     <script src="/javascripts/js/sb-admin-2.min.js"></script>
 
+    <!-- Page level plugins -->
+    <script src="/javascripts/chart.js/Chart.min.js"></script>
+
     <!-- Page level custom scripts -->
     <script src="/javascripts/js/demo/chart-area-demo.js"></script>
     <script src="/javascripts/js/demo/chart-pie-demo.js"></script>
+
+    <script src="/javascripts/js/checkList.js"></script>
 
 </body>
 

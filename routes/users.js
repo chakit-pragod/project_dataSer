@@ -10,6 +10,10 @@ router.get('/table', function(req, res, next) {
   res.render('user/tables');
 });
 
+router.get('/table/create', function(req, res, next) {
+  res.render('user/createData');
+});
+
 router.get('/news', function(req, res, next) {
   res.render('user/news');
 });
