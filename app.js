@@ -77,6 +77,40 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// forgot endpoint
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  
+  if (!user) {
+    return res.status(400).send('Email not found');
+  }
+
+  // Render the reset-password page and pass the email
+  res.render('auth/reset-password', { email: user.email });
+});
+
+// reset password endpoint
+app.post('/reset-password', async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(400).send('Email not found');
+      }
+
+      // Update the user's password
+      user.password = newPassword; // You might want to hash this password before saving
+      await user.save();
+
+      res.status(200).send('Password updated successfully');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+  }
+});
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
