@@ -47,7 +47,7 @@ app.post('/register', async (req, res) => {
 
   try {
       const existingUser = await User.findOne({ email });
-      var usertype = '0';
+      var usertype = '1';
       if (existingUser) {
           return res.status(400).send('Email already in use.');
       }
