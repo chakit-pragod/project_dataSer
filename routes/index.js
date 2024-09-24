@@ -10,4 +10,12 @@ router.get('/register', function(req, res, next) {
   res.render('auth/register');
 });
 
+router.get('/forgot-password', function(req, res, next) {
+  res.render('auth/forgot-password');
+});
+
+router.get('/reset-password', function(req, res, next) {
+  res.render('auth/reset-password');
+});
+
 module.exports = router;
