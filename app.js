@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const User = require('./models/user');
 
 const app = express();
 const MONGODB_URI = 'mongodb://localhost:27017/userDB';
@@ -26,16 +27,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // To parse URL-encoded bodi
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
-
-// User schema
-const UserSchema = new mongoose.Schema({
-    usertype: { type: String, required: true, unique: true },
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
-});
-
-const User = mongoose.model('User', UserSchema);
 
 // Register endpoint
 app.post('/register', async (req, res) => {
@@ -77,11 +68,12 @@ app.post('/login', async (req, res) => {
   if (user.password !== password) {
       return res.status(400).send('Invalid password');
   }
-  if (user.usertype == '0') {
-    res.send('Admin Login successful');
-  }
-  else if (user.usertype == '1') {
-    res.send('User Login successful');
+
+  // Redirect to different views based on user type
+  if (user.usertype === '0') {
+    res.render('admin/announce'); // Render admin view
+  } else if (user.usertype === '1') {
+    res.render('user/home'); // Render user view
   }
 });
 
