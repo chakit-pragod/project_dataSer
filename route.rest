@@ -1,0 +1,33 @@
+GET http://localhost:3000/account
+
+###
+
+GET http://localhost:3000/account/66f398486054ec66357517c7
+
+###
+
+POST http://localhost:3000/account
+Content-Type: application/json
+
+{
+    "Category" : 1,
+    "Date" : "2024-09-22",
+    "Detail" : "จ่ายค่าอาหาร",
+    "Amount" : 1000.25,
+    "SecondaryCategory" : 1,
+    "User_ID" : 1
+    
+}
+
+###
+
+DELETE http://localhost:3000/account/66f398486054ec66357517c7
+
+###
+
+PATCH http://localhost:3000/account/66f398416054ec66357517c5
+Content-Type: application/json
+
+{
+    "Category" : 0
+}
