@@ -93,6 +93,13 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
+                    <% if (success_msg) { %>
+                        <div class="alert alert-success"><%= success_msg %></div>
+                    <% } %>
+                    <% if (error_msg) { %>
+                        <div class="alert alert-danger"><%= error_msg %></div>
+                    <% } %>
+                    
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
@@ -131,17 +138,17 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+                    <h1 class="h3 mb-2 text-gray-800">ตารางข้อมูล รายรับ/รายจ่าย</h1>
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">ตารางข้อมูล</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <div class="row mx-0 my-2">
-                                    <a href="/users/table/create" class="btn btn-primary">Create data</a>
+                                    <a href="/users/table/create" class="btn btn-primary"><i class="fas fa-edit"></i> สร้าง</a>
                                 </div>
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
@@ -152,75 +159,17 @@
                                             <th>รายจ่าย</th>
                                             <th>คงเหลือ</th>
                                             <th>หมวดหมู่</th>
+                                            <th>การจัดการ</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>วันที่</th>
-                                            <th>รายการ</th>
-                                            <th>รายรับ</th>
-                                            <th>รายจ่าย</th>
-                                            <th>คงเหลือ</th>
-                                            <th>หมวดหมู่</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>เงินเดือน</td>
-                                            <td>15,000 ฿</td>
-                                            <td>-</td>
-                                            <td>15,000 ฿</td>
-                                            <td>รายรับ</td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>ซื้อครีมอาบน้ำ</td>
-                                            <td>-</td>
-                                            <td>100 ฿</td>
-                                            <td>14,900 ฿</td>
-                                            <td>ของใช้</td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>ค่าข้าวกลางวัน</td>
-                                            <td>-</td>
-                                            <td>200 ฿</td>
-                                            <td>14,700 ฿</td>
-                                            <td>ของกิน</td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>ค่าหอ</td>
-                                            <td>-</td>
-                                            <td>4,000 ฿</td>
-                                            <td>10,700 ฿</td>
-                                            <td>ค่าที่พัก</td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>ค่าน้ำ</td>
-                                            <td>-</td>
-                                            <td>100 ฿</td>
-                                            <td>10,600 ฿</td>
-                                            <td>ค่าที่พัก</td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/09/2567</td>
-                                            <td>ค่าไฟ</td>
-                                            <td>-</td>
-                                            <td>600 ฿</td>
-                                            <td>10,000 ฿</td>
-                                            <td>ค่าที่พัก</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody id="tableBody"></tbody>
+                                    <tfoot></tfoot>
                                 </table>
                             </div>
                         </div>
                     </div>
 
                 </div>
-                <!-- /.container-fluid -->
             </div>
             <!-- End of Main Content -->
 
@@ -228,7 +177,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Group 3 2023</span>
+                        <span>Copyright &copy; Group 3 2024</span>
                     </div>
                 </div>
             </footer>
@@ -259,6 +208,230 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Transaction</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" action="/update-transaction" method="POST">
+                        <input type="hidden" id="editTransactionId">
+                        <div class="form-group">
+                            <label for="editDate">วันที่</label>
+                            <input type="date" class="form-control form-control-lg" id="editDate" name="date" placeholder="เลือกวันที่" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editItem">รายการ</label>
+                            <input type="text" class="form-control form-control-lg" id="editItem" name="item" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editType">ประเภท</label>
+                            <select class="form-control form-control-lg" id="editType" name="type" onchange="toggleAmountField()" required>
+                                <option value="">-- เลือกรายการ --</option>
+                                <option value="income">รายรับ</option>
+                                <option value="expense">รายจ่าย</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAmount">จำนวนเงิน</label>
+                            <input type="number" class="form-control form-control-lg" id="editAmount" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCategory">หมวดหมู่</label>
+                            <select class="form-control form-control-lg" id="editCategory" name="category" required>
+                                <option value="">-- หมวดหมู่ --</option>
+                                <option value="food">ค่าอาหาร</option>
+                                <option value="personal">ของใช้ส่วนตัว</option>
+                                <option value="utilities">ค่าน้ำ/ค่าไฟ</option>
+                                <option value="internet">ค่าโทรศัพท์/อินเตอร์เน็ต</option>
+                                <option value="rent">ค่าเช่าบ้าน</option>
+                                <option value="fuel">ค่าน้ำมัน</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Are you sure you want to delete this transaction?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/transactions')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = ''; // Clear existing data
+                    data.forEach(transaction => {
+                        const row = document.createElement('tr');
+                        const formattedDate = new Date(transaction.date).toLocaleDateString('th-TH'); // Change 'th-TH' for Thai format
+                        row.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>${transaction.item}</td>
+                            <td>${transaction.type === 'income' ? transaction.amount : '-'}</td>
+                            <td>${transaction.type === 'expense' ? transaction.amount : '-'}</td>
+                            <td>${transaction.category}</td>
+                            <td>${transaction.category}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i>แก้ไข</button>
+                                <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i>ลบ</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching transactions:', error));
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableBody = document.getElementById('tableBody');
+            // Edit functionality
+            tableBody.addEventListener('click', function(event) {
+                if (event.target.closest('.btn-warning')) {
+                    const row = event.target.closest('tr');
+                    const transactionId = row.getAttribute('data-id'); // Get the ID from data attribute
+                    const date = row.cells[0].textContent;
+                    const item = row.cells[1].textContent;
+                    const type = row.cells[2].textContent;
+                    const category = row.cells[4].textContent;
+
+                    //แปลงคอลัม 2 ให้เป็น รายรับ หรือ รายจ่าย
+                    let transactionType;
+                    if (typeof(type) === "string" && type == "-") {
+                        transactionType = "expense";
+                    } else {
+                        transactionType = "income";
+                    }
+
+                    //ถ้า transactionType เป็น "income" ให้ดึงข้อมูลจาก คอลัม 2
+                    //ถ้า transactionType เป็น "expense" ให้ดึงข้อมูลจาก คอลัม 3
+                    let amount;
+                    if (transactionType == "income") {
+                        amount = row.cells[2].textContent;
+                    } else {
+                        amount = row.cells[3].textContent;
+                    }
+                      
+
+
+                    // Populate edit form
+                    document.getElementById('editTransactionId').value = transactionId;
+                    document.getElementById('editDate').value = date;
+                    document.getElementById('editItem').value = item;
+                    document.getElementById('editType').value = transactionType;
+                    document.getElementById('editAmount').value = amount;
+                    document.getElementById('editCategory').value = category;
+
+                    // Show the edit modal
+                    $('#editModal').modal('show');
+                }
+            });
+
+            // Handle edit form submission
+            document.getElementById('editForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const id = document.getElementById('editTransactionId').value;
+                const updatedData = {
+                    date: document.getElementById('editDate').value,
+                    item: document.getElementById('editItem').value,
+                    type: document.getElementById('editType').value,
+                    amount: document.getElementById('editAmount').value,
+                    category: document.getElementById('editCategory').value,
+                };
+
+                fetch(`/api/transactions/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    $('#editModal').modal('hide');
+                    location.reload(); // Refresh the page to see changes
+                })
+                .catch(error => console.error('Error updating transaction:', error));
+            });
+
+            // Delete functionality
+            let deleteTransactionId;
+            tableBody.addEventListener('click', function(event) {
+                if (event.target.closest('.btn-danger')) {
+                    deleteTransactionId = event.target.closest('tr').getAttribute('data-id'); // Get the ID
+                    $('#deleteModal').modal('show');
+                }
+            });
+
+            // Confirm deletion
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                fetch(`/api/transactions/${deleteTransactionId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        $('#deleteModal').modal('hide');
+                        location.reload(); // Refresh the page to see changes
+                    } else {
+                        console.error('Error deleting transaction:', response);
+                    }
+                })
+                .catch(error => console.error('Error deleting transaction:', error));
+            });
+        });
+
+        // Show alerts and set them to close after 5 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.display = 'block'; // Show the alert
+                setTimeout(() => {
+                    alert.style.display = 'none'; // Hide the alert after 5 seconds
+                }, 2000);
+            });
+            
+        });
+    </script>
+
+    <script>
+        function convertThaiDateToISO(thaiDate) {
+            const [day, month, year] = thaiDate.split('/').map(Number);
+            const gregorianYear = year - 543; // Convert to Gregorian year
+
+            // Create a new Date object
+            const date = new Date(gregorianYear, month - 1, day); // Month is 0-indexed
+
+            // Format the date to ISO 8601 string with timezone
+            return date.toISOString(); // Returns in the format: "YYYY-MM-DDTHH:mm:ss.sssZ"
+        }
+    </script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="/javascripts/jquery/jquery.min.js"></script>

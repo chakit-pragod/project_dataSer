@@ -132,7 +132,7 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Announce</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Add items ( income / expense ) </h1>
                     </div>
 
                     <!-- Content Row -->
@@ -143,12 +143,13 @@
                                 <!-- Card Header -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
-                                    <h6 class="m-0 font-weight-bold">เพิ่มประกาศ</h6>
+                                    <h6 class="m-0 font-weight-bold">เพิ่มรายการ รายรับ/รายจ่าย</h6>
                                     <i class="fas fa-plus-circle"></i>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <form>
+                                    <form action="/add-transaction" method="POST">
+
                                         <!-- Date input -->
                                         <div class="form-group row">
                                             <label for="dataDate"
@@ -156,8 +157,7 @@
                                                 <i class="fas fa-calendar-alt"></i> วันที่
                                             </label>
                                             <div class="col-sm-10">
-                                                <input type="date" class="form-control form-control-lg" id="dataDate"
-                                                    placeholder="เลือกวันที่">
+                                                <input type="date" class="form-control form-control-lg" id="dataDate" name="date" placeholder="เลือกวันที่">
                                             </div>
                                         </div>
 
@@ -168,8 +168,7 @@
                                                 <i class="fas fa-align-left"></i> ชื่อรายการ
                                             </label>
                                             <div class="col-sm-10">
-                                                <input type="text" class="form-control form-control-lg" id="dataTitle"
-                                                    placeholder="ใส่ชื่อรายการ">
+                                                <input type="text" class="form-control form-control-lg" id="dataTitle" name="item" placeholder="ใส่ชื่อรายการ">
                                             </div>
                                         </div>
 
@@ -177,11 +176,10 @@
                                         <div class="form-group row">
                                             <label for="dataType"
                                                 class="col-sm-2 col-form-label font-weight-bold text-primary">
-                                                <i class="fas fa-paperclip"></i> รายการ
+                                                <i class="fas fa-paperclip"></i> ประเภท
                                             </label>
                                             <div class="col-sm-10">
-                                                <select class="form-control form-control-lg" id="dataType"
-                                                    onchange="toggleAmountField()">
+                                                <select class="form-control form-control-lg" id="dataType" name="type" onchange="toggleAmountField()">
                                                     <option value="">-- เลือกรายการ --</option>
                                                     <option value="income">รายรับ</option>
                                                     <option value="expense">รายจ่าย</option>
@@ -196,8 +194,7 @@
                                                 <i class="fas fa-dollar-sign"></i> จำนวนเงิน
                                             </label>
                                             <div class="col-sm-10">
-                                                <input type="number" class="form-control form-control-lg"
-                                                    id="dataAmount" placeholder="ใส่จำนวนเงิน">
+                                                <input type="number" class="form-control form-control-lg" id="dataAmount" name="amount" placeholder="ใส่จำนวนเงิน">
                                             </div>
                                         </div>
 
@@ -208,7 +205,7 @@
                                                 <i class="fas fa-folder"></i> หมวดหมู่
                                             </label>
                                             <div class="col-sm-10">
-                                                <select class="form-control form-control-lg" id="dataCategory">
+                                                <select class="form-control form-control-lg" id="dataCategory" name="category">
                                                     <option value="">-- หมวดหมู่ --</option>
                                                     <option value="food">ค่าอาหาร</option>
                                                     <option value="personal">ของใช้ส่วนตัว</option>
