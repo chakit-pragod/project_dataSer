@@ -94,19 +94,36 @@ app.post('/register', async (req, res) => {
 // Login endpoint
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user) return res.status(400).send('User not found');
 
-  if (user.password !== password) {
+  try{
+    const user = await User.findOne({ username });
+    req.session.user = user.username;  // Store the username in session
+    req.session.usertype = user.usertype;  // Store the usertype in session
+
+    if (!user) return res.status(400).send('User not found');
+
+    // Redirect to different views based on user type
+    if (user.usertype === '0') {
+      res.redirect('admin/announce');
+    }
+    
+    if (user.usertype === '1') {
+      res.redirect('users/dashboard');
+    }
+  } catch (error) {
+    if (user.password !== password) {
       return res.status(400).send('Invalid password');
+    }
   }
+  
 
-  // Redirect to different views based on user type
-  if (user.usertype === '0') {
-    res.render('admin/announce'); // Render admin view
-  } else if (user.usertype === '1') {
-    res.render('user/home'); // Render user view
-  }
+  
+});
+
+// Logout route (optional)
+app.post('/logout', (req, res) => {
+  req.session.destroy(); // Destroy session data
+  res.redirect('/login');
 });
 
 // forgot endpoint
