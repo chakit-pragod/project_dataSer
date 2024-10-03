@@ -101,6 +101,9 @@ app.post('/login', async (req, res) => {
     req.session.usertype = user.usertype;  // Store the usertype in session
 
     if (!user) return res.status(400).send('User not found');
+    if (user.password !== password) {
+      res.status(400).send('Invalid password');
+    }
 
     // Redirect to different views based on user type
     if (user.usertype === '0') {
@@ -111,9 +114,7 @@ app.post('/login', async (req, res) => {
       res.redirect('users/dashboard');
     }
   } catch (error) {
-    if (user.password !== password) {
-      return res.status(400).send('Invalid password');
-    }
+    res.json(error);
   }
   
 
