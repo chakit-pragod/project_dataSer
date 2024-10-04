@@ -50,16 +50,6 @@ mongoose.connect(MONGODB_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-// Assuming you have a Transaction model
-app.get('/api/transactions', async (req, res) => {
-  try {
-      const transactions = await Transaction.find();
-      res.json(transactions);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching transactions' });
-  }
-});
-
 // Register endpoint
 app.post('/register', async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
@@ -101,9 +91,6 @@ app.post('/login', async (req, res) => {
     req.session.usertype = user.usertype;  // Store the usertype in session
 
     if (!user) return res.status(400).send('User not found');
-    if (user.password !== password) {
-      res.status(400).send('Invalid password');
-    }
 
     // Redirect to different views based on user type
     if (user.usertype === '0') {
@@ -112,6 +99,10 @@ app.post('/login', async (req, res) => {
     
     if (user.usertype === '1') {
       res.redirect('users/dashboard');
+    }
+
+    if (user.password !== password) {
+      return res.status(400).send('Invalid password');
     }
   } catch (error) {
     res.json(error);
@@ -161,57 +152,6 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-// Define a POST route to add data
-app.post('/add-transaction', (req, res) => {
-  const { date, item, amount, type, category } = req.body;
-
-  console.log({ date, item, amount, type, category }); // Log to see what's being sent
-
-  const newTransaction = new Transaction({
-      date,
-      item,
-      amount,
-      type,
-      category,
-  });
-
-  newTransaction.save()
-    .then(() => {
-      req.flash('success_msg', 'Transaction saved!');
-      res.redirect('/users/table'); // Redirect to the table route
-    })
-    .catch(err => {
-      req.flash('error_msg', 'Error adding data: ' + err.message);
-      res.redirect('/add-transaction'); // Redirect back to the add transaction page
-    });
-});
-
-// update transaction endpoint
-app.post('/update-transaction', async (req, res) => {
-  const { newdate, newitem, newamount, newtype, newcategory } = req.body;
-
-  try {
-      const transaction = await Transaction.findOne({ item });
-      if (!transaction) {
-          return res.status(400).send('Item not found');
-      }
-
-      // Update the item
-      transaction.date = newdate;
-      transaction.item = newitem;
-      transaction.amount = newamount;
-      transaction.type = newtype;
-      transaction.category = newcategory;
-
-      await transaction.save();
-
-      res.status(200).send('Item updated successfully');
-  } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
-  }
-});
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -236,35 +176,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-app.put('/api/transactions/:id', async (req, res) => {
-  const transactionId = req.params.id;
-  const updatedData = req.body;
-
-  try {
-      const transaction = await Transaction.findByIdAndUpdate(transactionId, updatedData, { new: true });
-      if (!transaction) {
-          return res.status(404).json({ message: 'Transaction not found' });
-      }
-      res.json({ message: 'Transaction updated successfully', transaction });
-  } catch (error) {
-      res.status(500).json({ message: 'Error updating transaction', error });
-  }
-});
-
-app.delete('/api/transactions/:id', async (req, res) => {
-  const transactionId = req.params.id;
-
-  try {
-      const transaction = await Transaction.findByIdAndDelete(transactionId);
-      if (!transaction) {
-          return res.status(404).json({ message: 'Transaction not found' });
-      }
-      res.json({ message: 'Transaction deleted successfully' });
-  } catch (error) {
-      res.status(500).json({ message: 'Error deleting transaction', error });
-  }
 });
 
 module.exports = app;
