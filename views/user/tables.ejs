@@ -162,7 +162,24 @@
                                             <th>การจัดการ</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tableBody"></tbody>
+                                    <tbody id="tableBody">
+                                        <% if (blogs.length>0) {%>
+                                        <%blogs.forEach(ablog => { %>
+                                        <tr>
+                                            <td><%= new Date(ablog.date).toLocaleDateString() %></td>
+                                            <td><%= ablog.item %></td>
+                                            <td><%= ablog.type === 'income' ? ablog.amount : '-' %></td>
+                                            <td><%= ablog.type === 'expense' ? ablog.amount : '-' %></td>
+                                            <td><%= ablog.category %></td>
+                                            <td><%= ablog.category %></td>
+                                            <td>
+                                                <button class="btn btn-warning btn-sm" data-id="<%= ablog._id %>"><i class="fas fa-edit"></i>แก้ไข</button>
+                                                <button class="btn btn-danger btn-sm" data-id="<%= ablog._id %>"><i class="fas fa-trash-alt"></i>ลบ</button>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                        <% } %>
+                                    </tbody>
                                     <tfoot></tfoot>
                                 </table>
                             </div>
@@ -223,7 +240,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" action="/update-transaction" method="POST">
+                    <form id="editForm">
                         <input type="hidden" id="editTransactionId">
                         <div class="form-group">
                             <label for="editDate">วันที่</label>
@@ -282,160 +299,104 @@
             </div>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/transactions')
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('tableBody');
-                    tableBody.innerHTML = ''; // Clear existing data
-                    data.forEach(transaction => {
-                        const row = document.createElement('tr');
-                        const formattedDate = new Date(transaction.date).toLocaleDateString('th-TH'); // Change 'th-TH' for Thai format
-                        row.innerHTML = `
-                            <td>${formattedDate}</td>
-                            <td>${transaction.item}</td>
-                            <td>${transaction.type === 'income' ? transaction.amount : '-'}</td>
-                            <td>${transaction.type === 'expense' ? transaction.amount : '-'}</td>
-                            <td>${transaction.category}</td>
-                            <td>${transaction.category}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i>แก้ไข</button>
-                                <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i>ลบ</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Error fetching transactions:', error));
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tableBody = document.getElementById('tableBody');
-            // Edit functionality
-            tableBody.addEventListener('click', function(event) {
-                if (event.target.closest('.btn-warning')) {
-                    const row = event.target.closest('tr');
-                    const transactionId = row.getAttribute('data-id'); // Get the ID from data attribute
-                    const date = row.cells[0].textContent;
-                    const item = row.cells[1].textContent;
-                    const type = row.cells[2].textContent;
-                    const category = row.cells[4].textContent;
-
-                    //แปลงคอลัม 2 ให้เป็น รายรับ หรือ รายจ่าย
-                    let transactionType;
-                    if (typeof(type) === "string" && type == "-") {
-                        transactionType = "expense";
-                    } else {
-                        transactionType = "income";
-                    }
-
-                    //ถ้า transactionType เป็น "income" ให้ดึงข้อมูลจาก คอลัม 2
-                    //ถ้า transactionType เป็น "expense" ให้ดึงข้อมูลจาก คอลัม 3
-                    let amount;
-                    if (transactionType == "income") {
-                        amount = row.cells[2].textContent;
-                    } else {
-                        amount = row.cells[3].textContent;
-                    }
-                      
-
-
-                    // Populate edit form
-                    document.getElementById('editTransactionId').value = transactionId;
-                    document.getElementById('editDate').value = date;
-                    document.getElementById('editItem').value = item;
-                    document.getElementById('editType').value = transactionType;
-                    document.getElementById('editAmount').value = amount;
-                    document.getElementById('editCategory').value = category;
-
-                    // Show the edit modal
-                    $('#editModal').modal('show');
-                }
-            });
-
-            // Handle edit form submission
-            document.getElementById('editForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const id = document.getElementById('editTransactionId').value;
-                const updatedData = {
-                    date: document.getElementById('editDate').value,
-                    item: document.getElementById('editItem').value,
-                    type: document.getElementById('editType').value,
-                    amount: document.getElementById('editAmount').value,
-                    category: document.getElementById('editCategory').value,
-                };
-
-                fetch(`/api/transactions/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    $('#editModal').modal('hide');
-                    location.reload(); // Refresh the page to see changes
-                })
-                .catch(error => console.error('Error updating transaction:', error));
-            });
-
-            // Delete functionality
-            let deleteTransactionId;
-            tableBody.addEventListener('click', function(event) {
-                if (event.target.closest('.btn-danger')) {
-                    deleteTransactionId = event.target.closest('tr').getAttribute('data-id'); // Get the ID
-                    $('#deleteModal').modal('show');
-                }
-            });
-
-            // Confirm deletion
-            document.getElementById('confirmDelete').addEventListener('click', function() {
-                fetch(`/api/transactions/${deleteTransactionId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => {
-                    if (response.ok) {
-                        $('#deleteModal').modal('hide');
-                        location.reload(); // Refresh the page to see changes
-                    } else {
-                        console.error('Error deleting transaction:', response);
-                    }
-                })
-                .catch(error => console.error('Error deleting transaction:', error));
+        //get id on button and put on modal
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.addEventListener('click', function() {
+                deleteTransactionId = this.getAttribute('data-id');
+                $('#deleteModal').modal('show');
+                document.getElementById('confirmDelete').setAttribute('data-id',deleteTransactionId)
             });
         });
-
-        // Show alerts and set them to close after 5 seconds
-        document.addEventListener('DOMContentLoaded', function () {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.display = 'block'; // Show the alert
-                setTimeout(() => {
-                    alert.style.display = 'none'; // Hide the alert after 5 seconds
-                }, 2000);
-            });
+        //use delete api
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            fetch(`/transaction/${deleteTransactionId}`, {
+                method: 'DELETE'
+            })
+        $('#deleteModal').modal('hide');
+        window.location.reload();
+        });
+        function convertToISODate(localDateString) {
+            // Split the local date string (6/10/2567) based on the "/" separator
+            const [day, month, year] = localDateString.split('/');
             
+            // Adjust the Buddhist calendar year (2567) to the Gregorian year by subtracting 543
+            const gregorianYear = year - 543;
+        
+            // Construct the date in the yyyy-mm-dd format
+            const formattedDate = `${gregorianYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        
+            return formattedDate;
+        }
+        //put info on modal except date cause lmao
+        document.querySelectorAll('.btn-warning').forEach(button => {
+            button.addEventListener('click', function() {
+                const transactionId = this.getAttribute('data-id'); // Get the ID from data attribute
+                const row = event.target.closest('tr');
+                var date = row.cells[0].textContent;
+                const item = row.cells[1].textContent;
+                const type = row.cells[2].textContent;
+                const category = row.cells[4].textContent;
+                console.log('transactionid = '+transactionId);
+                //แปลงคอลัม 2 ให้เป็น รายรับ หรือ รายจ่าย
+                let transactionType;
+                if (typeof(type) === "string" && type == "-") {
+                    transactionType = "expense";
+                } else {
+                    transactionType = "income";
+                }
+
+                //ถ้า transactionType เป็น "income" ให้ดึงข้อมูลจาก คอลัม 2
+                //ถ้า transactionType เป็น "expense" ให้ดึงข้อมูลจาก คอลัม 3
+                let amount;
+                if (transactionType == "income") {
+                    amount = row.cells[2].textContent;
+                } else {
+                    amount = row.cells[3].textContent;
+                }
+                date = convertToISODate(date);
+                // Populate edit form
+                document.getElementById('editTransactionId').value = transactionId;
+                document.getElementById('editTransactionId').setAttribute('data-id',transactionId)
+                document.getElementById('editDate').value = date;
+                document.getElementById('editItem').value = item;
+                document.getElementById('editType').value = transactionType;
+                document.getElementById('editAmount').value = amount;
+                document.getElementById('editCategory').value = category;
+
+                // Show the edit modal
+                $('#editModal').modal('show');
+            });
+        });
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const id = document.getElementById('editTransactionId').value;
+            console.log(id)
+            const updatedData = {
+                date: document.getElementById('editDate').value,
+                item: document.getElementById('editItem').value,
+                type: document.getElementById('editType').value,
+                amount: document.getElementById('editAmount').value,
+                category: document.getElementById('editCategory').value
+            };
+            console.log(JSON.stringify(updatedData))
+            fetch(`/transaction/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                $('#editModal').modal('hide');
+                location.reload(); // Refresh the page to see changes
+            })
+            .catch(error => console.error('Error updating transaction:', error));
         });
     </script>
-
-    <script>
-        function convertThaiDateToISO(thaiDate) {
-            const [day, month, year] = thaiDate.split('/').map(Number);
-            const gregorianYear = year - 543; // Convert to Gregorian year
-
-            // Create a new Date object
-            const date = new Date(gregorianYear, month - 1, day); // Month is 0-indexed
-
-            // Format the date to ISO 8601 string with timezone
-            return date.toISOString(); // Returns in the format: "YYYY-MM-DDTHH:mm:ss.sssZ"
-        }
-    </script>
-
     <!-- Bootstrap core JavaScript-->
     <script src="/javascripts/jquery/jquery.min.js"></script>
     <script src="/javascripts/bootstrap/js/bootstrap.bundle.min.js"></script>

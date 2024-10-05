@@ -6,7 +6,7 @@ const flash = require('connect-flash');
 
 //import module models
 const User = require('./models/user');
-const Transaction = require('./models/transaction');
+//const Transaction = require('../models/transaction');
 
 const app = express();
 const MONGODB_URI = 'mongodb://localhost:27017/userDB';
@@ -19,6 +19,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
+var transactionRouter = require('./routes/transaction');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -161,7 +162,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
-
+app.use('/transaction', transactionRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

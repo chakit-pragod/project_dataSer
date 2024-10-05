@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+const Transaction = require('../models/transaction')
 /* GET users listing. */
 /*
 router.get('/dashboard', function(req, res, next) {
@@ -51,10 +51,11 @@ router.get('/dashboard', redirectIfAuthenticated, (req, res) => {
   }
 });
 
-router.get('/table', redirectIfAuthenticated, (req, res) => {
+router.get('/table', redirectIfAuthenticated,async (req, res) => {
+  const blogs = await Transaction.find()
   if (req.session.user) {
     // Pass user data to the announce page
-    res.render('user/tables', { username: req.session.user });
+    res.render('user/tables', { username: req.session.user,blogs});
   } else {
     // Redirect to login if no session exists
     res.redirect('/login');
