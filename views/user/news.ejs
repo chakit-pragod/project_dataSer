@@ -134,21 +134,7 @@
                     <!-- Content Row -->
                     <div class="row justify-content-center">
                         <!-- Area News -->
-                        <div class="col-xl-6 col-lg-6">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <!-- Content News -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div id="announcements"></div>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
@@ -193,6 +179,27 @@
             </div>
         </div>
     </div>
+
+    <script>
+        async function fetchAnnouncements() {
+            const response = await fetch('/announcements');  // Fetch data from backend
+            const announcements = await response.json();
+            const announceDiv = document.getElementById('announcements');
+
+            announcements.forEach(announce => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <img src="/${announce.image}" alt="${announce.title}">
+                    <h2>${announce.title}</h2>
+                    <p>${announce.description}</p>
+                `;
+                announceDiv.appendChild(div);
+            });
+        }
+
+        fetchAnnouncements();
+    </script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="/javascripts/jquery/jquery.min.js"></script>

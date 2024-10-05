@@ -137,27 +137,27 @@
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <form>
+                                    <form id="announcementForm" action="/announce" method="POST" enctype="multipart/form-data">
                                         <!-- Title input -->
                                         <div class="form-group">
                                             <label for="announcementTitle" class="font-weight-bold text-primary">
                                                 <i class="fas fa-heading"></i> หัวข้อประกาศ
                                             </label>
-                                            <input type="text" class="form-control form-control-lg" id="announcementTitle" placeholder="ใส่หัวข้อประกาศ">
+                                            <input type="text" class="form-control form-control-lg" id="title" name="title" placeholder="ใส่หัวข้อประกาศ" required>
                                         </div>
                                         <!-- Content input -->
                                         <div class="form-group">
                                             <label for="announcementContent" class="font-weight-bold text-primary">
                                                 <i class="fas fa-align-left"></i> เนื้อหาประกาศ
                                             </label>
-                                            <textarea class="form-control form-control-lg" id="announcementContent" rows="5" placeholder="ใส่เนื้อหาประกาศ"></textarea>
+                                            <textarea class="form-control form-control-lg" id="description" name="description" rows="5" placeholder="ใส่เนื้อหาประกาศ" required></textarea>
                                         </div>
                                         <!-- File upload -->
                                         <div class="form-group">
                                             <label for="announcementFile" class="font-weight-bold text-primary">
                                                 <i class="fas fa-paperclip"></i> แนบไฟล์ (ถ้ามี)
                                             </label>
-                                            <input type="file" class="form-control-file" id="announcementFile">
+                                            <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
                                         </div>
                                         <!-- Submit button -->
                                         <div class="text-center">
