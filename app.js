@@ -109,9 +109,6 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     res.json(error);
   }
-  
-
-  
 });
 
 // Logout route (optional)
