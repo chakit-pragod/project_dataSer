@@ -15,6 +15,7 @@ function redirectIfAuthenticated(req, res, next) {
   next();
 }
 
+/*
 function ensureAuthenticated(req, res, next) {
   if (!req.session.user) {
     // User is not logged in, redirect to login page
@@ -23,6 +24,7 @@ function ensureAuthenticated(req, res, next) {
   // User is logged in, allow them to proceed
   next();
 }
+*/
 
 /* GET home page. */
 router.get('/login', redirectIfAuthenticated, function(req, res, next) {
