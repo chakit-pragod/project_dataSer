@@ -1,7 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const User = require('./models/user');
+const session = require('express-session');
+const flash = require('connect-flash');
+
+//import module models
+const User = require('./models/User');
+//const Transaction = require('../models/transaction');
 
 const app = express();
 const MONGODB_URI = 'mongodb://localhost:27017/userDB';
@@ -14,6 +19,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
+var transactionRouter = require('./routes/transaction');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +28,23 @@ app.set('view engine', 'ejs');
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // To parse URL-encoded bodies
+
+// Set up session middleware
+app.use(session({
+  secret: 'AomsinTheBest', // replace with your secret key
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Initialize flash
+app.use(flash());
+
+// Make flash messages available in all views
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  next();
+});
 
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)
@@ -62,19 +85,39 @@ app.post('/register', async (req, res) => {
 // Login endpoint
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user) return res.status(400).send('User not found');
 
-  if (user.password !== password) {
+  try{
+    const user = await User.findOne({ username });
+    req.session.user_id = user._id;
+    req.session.user = user.username;  // Store the username in session
+    req.session.usertype = user.usertype;  // Store the usertype in session
+
+    if (!user) return res.status(400).send('User not found');
+
+    // Redirect to different views based on user type
+    if (user.usertype === '0') {
+      res.redirect('admin/announce');
+    }
+    
+    if (user.usertype === '1') {
+      res.redirect('users/dashboard');
+    }
+
+    if (user.password !== password) {
       return res.status(400).send('Invalid password');
+    }
+  } catch (error) {
+    res.json(error);
   }
+  
 
-  // Redirect to different views based on user type
-  if (user.usertype === '0') {
-    res.render('admin/announce'); // Render admin view
-  } else if (user.usertype === '1') {
-    res.render('user/home'); // Render user view
-  }
+  
+});
+
+// Logout route (optional)
+app.post('/logout', (req, res) => {
+  req.session.destroy(); // Destroy session data
+  res.redirect('/login');
 });
 
 // forgot endpoint
@@ -120,7 +163,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
-
+app.use('/transaction', transactionRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
