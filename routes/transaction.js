@@ -60,8 +60,8 @@ router.post('/', async(req,res)=>{
         item : req.body.item,
         amount : req.body.amount,
         type : req.body.type,
-        category : req.body.category
-        //user_ID : req.body.user_ID,
+        category : req.body.category,
+        user_ID : req.session.user_id
     })
     try{
         const new_transaction = await acc.save()

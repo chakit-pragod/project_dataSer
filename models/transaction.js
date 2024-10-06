@@ -7,10 +7,10 @@ const transactionSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     type: { type: String, enum: ['income', 'expense'], required: true },
     category: { type: String, required: true },
-    //user_ID: {type : mongoose.Schema.Types.ObjectId , ref : 'users'}
+    user_ID: {type : mongoose.Schema.Types.ObjectId , ref : 'User'}
 }, {timestamps:true});
 
 // Create a model from the schema
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
-module.exports = Transaction;
+module.exports = Transaction || mongoose.model.Transaction

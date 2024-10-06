@@ -52,7 +52,8 @@ router.get('/dashboard', redirectIfAuthenticated, (req, res) => {
 });
 
 router.get('/table', redirectIfAuthenticated,async (req, res) => {
-  const blogs = await Transaction.find()
+  const blogs = await Transaction.find({user_ID:req.session.user_id})
+  console.log(req.session.user_id)
   if (req.session.user) {
     // Pass user data to the announce page
     res.render('user/tables', { username: req.session.user,blogs});
@@ -71,4 +72,6 @@ router.get('/news', redirectIfAuthenticated, (req, res) => {
     res.redirect('/login');
   }
 });
+
+
 module.exports = router;

@@ -5,7 +5,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 //import module models
-const User = require('./models/user');
+const User = require('./models/User');
 //const Transaction = require('../models/transaction');
 
 const app = express();
@@ -88,6 +88,7 @@ app.post('/login', async (req, res) => {
 
   try{
     const user = await User.findOne({ username });
+    req.session.user_id = user._id;
     req.session.user = user.username;  // Store the username in session
     req.session.usertype = user.usertype;  // Store the usertype in session
 
