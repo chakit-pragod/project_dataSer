@@ -76,7 +76,8 @@ app.post('/register', async (req, res) => {
 
       const savedUser = await newUser.save();
       console.log('User saved:', savedUser); // Log the saved user
-      res.status(201).send('User registered successfully');
+      //res.status(201).send('User registered successfully');
+      return res.render('auth/login',{blogs:'User registered successfully'});
   } catch (err) {
       console.error(err);
       res.status(500).send('Server error');
