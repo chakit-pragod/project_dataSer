@@ -18,4 +18,8 @@ router.get('/news', function(req, res, next) {
   res.render('user/news');
 });
 
+router.get('/profile', function(req, res, next) {
+  res.render('user/profile');
+});
+
 module.exports = router;
